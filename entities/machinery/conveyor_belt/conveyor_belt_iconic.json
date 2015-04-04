@@ -3,7 +3,7 @@
     "type": "entity",
     "components": {
         "item" : {
-            "category" : "decoration"
+            "category" : "machinery"
         },
         "model_variants": {
             "default": {

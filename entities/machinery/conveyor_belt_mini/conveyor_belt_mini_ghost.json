@@ -16,12 +16,12 @@
             }
         },
         "unit_info": {
-            "name": "Conveyor Belt",
-            "description": "You spin me right round baby right round..",
+            "name": "Conveyor Belt Mini",
+            "description": "Small but powerful.",
             "icon": "file(conveyor_belt_mini.png)"
         },
         "stonehearth:material": {
-            "tags": "wood decoration crafted"
+            "tags": "wood machinery crafted"
         }
     }
 }

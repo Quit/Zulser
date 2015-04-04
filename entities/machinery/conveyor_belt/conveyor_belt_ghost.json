@@ -17,11 +17,11 @@
         },
         "unit_info": {
             "name": "Conveyor Belt",
-            "description": "You spin me right round baby right round..",
+            "description": "Moves things so you don't have to.",
             "icon": "file(conveyor_belt.png)"
         },
         "stonehearth:material": {
-            "tags": "wood decoration crafted"
+            "tags": "wood machinery crafted"
         }
     }
 }
