@@ -18,6 +18,12 @@ local function create_conveyor(x, z, rot, resource, mini)
    return ent
 end
 
+local function create_conveyor_y(x, y, z, ...)
+  local conv = create_conveyor(x, z, ...)
+  radiant.entities.move_to(conv, Point3(x, y, z))
+  return conv
+end
+
 local function poof()
    return microworld:place_entity('stonehearth:resources:wood:oak_log', math.random(-30, 30), math.random(-30, 30), { full_size = false, owner = microworld:get_local_player_id() })
 end
@@ -33,21 +39,33 @@ function World:start()
    local owner = microworld:get_local_player_id()
    
    microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -4, 3, 3)
+   microworld:place_entity_cluster('stonehearth:resources:wood:oak_log', -4, 1, 3, 3)
    microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', 1, 1, 3, 3)
    
    microworld:create_terrain({ base = Point3(0, 0, 48), dimension = Point3(64, 15, 64) }, 'rock_layer_1')
    microworld:create_terrain({ base = Point3(0, 15, 48), dimension = Point3(64, 5, 32) }, 'rock_layer_2')
+   microworld:create_terrain({ base = Point3(0, 30, 48), dimension = Point3(64, 3, 64) }, 'rock_layer_6')
+   microworld:create_terrain({ base = Point3(0, 0, 64), dimension = Point3(64, 100, 5) }, 'rock_layer_6')
    
-   create_conveyor(-15, 21, 180)
-   create_conveyor(-15, 17, 180)
-   create_conveyor(-15, 13, 180)
-   create_conveyor(-15, 10, 180, nil, 'mini')
-   
-   create_conveyor(15, 21, 0)
-   create_conveyor(15, 17, 0)
-   create_conveyor(15, 13, 0)
-   create_conveyor(15, 10, 0, nil, 'mini')
-   
+  for _, y in pairs({ 15, 33 }) do
+    create_conveyor_y(-15, y, 21, 180)
+    create_conveyor_y(-15, y, 17, 180)
+
+    create_conveyor_y(-10, y, 21, 180)
+    create_conveyor_y(-10, y, 17, 180)
+
+    create_conveyor_y(15, y, 21, 0)
+    create_conveyor_y(15, y, 17, 0)
+  end  
+  
+  create_conveyor(-15, 13, 180)
+  create_conveyor(-15, 10, 180, nil, 'mini')  
+  
+  create_conveyor(-10, 13, 180)
+  create_conveyor(-10, 10, 180, nil, 'mini')
+    
+  create_conveyor(15, 13, 0)
+  create_conveyor(15, 10, 0, nil, 'mini')
 --~    for i = -28, -8, 4 do
 --~       create_conveyor(0, i, 0)
 --~       create_conveyor(0, -i, 180)
