@@ -224,7 +224,10 @@ function Conveyor:_on_position_change()
     -- Prioritise us. Trigger the event, but only this time (nil as origin will be replaced)
     self:_on_chain_update(nil)
     
-    for _, conveyor in pairs(radiant.terrain.get_entities_in_cube(Cube3(pos - Point3(2, 1, 3), pos + Point3(2, 1, 3)), function(ent) return ent ~= self._entity and ent:get_component('zulser:conveyor') ~= nil end)) do
+    -- I sure hope nobody tries to throw items further down than 100 blocks.
+    -- TODO: While convenient, the get_entities_in_cube function is foreaching the list and filtering entities out that don't belong
+    -- We should probably throw a function into the automation service that does the same, but with hardcoded filters.
+    for _, conveyor in pairs(radiant.terrain.get_entities_in_cube(Cube3(pos - Point3(5, 1, 5), pos + Point3(5, 100, 5)), function(ent) return ent ~= self._entity and ent:get_component('zulser:conveyor') ~= nil end)) do
       conveyor:get_component('zulser:conveyor'):_on_chain_update(self._entity)
     end
   end
