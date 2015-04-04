@@ -1,0 +1,20 @@
+{
+   "info" : {
+      "version" : 1,
+      "name" : "Zulser Ltd."
+   },
+   
+   "aliases" : {
+      "machinery:conveyor_belt" : "file(entities/machinery/conveyor_belt)",
+      "machinery:conveyor:vessel" : "file(entities/machinery/conveyor_belt/conveyor_vessel.json)"
+   },
+   
+   "mixintos" : {
+      "stonehearth:mixins:base_human" : "file(ai/injection.json)",
+      "/stonehearth/jobs/carpenter/recipes/recipes.json" : "file(jobs/carpenter/recipes)"
+   },
+   
+   "components" : {
+      "conveyor" : "file(components/conveyor.lua)"
+   }
+}

@@ -1,0 +1,8 @@
+{
+   "type" : "entity",
+   "components" : {
+      "mob" : {
+         "interpolate_movement" : true
+      }
+   }
+}

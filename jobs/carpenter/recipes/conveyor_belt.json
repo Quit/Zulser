@@ -1,0 +1,23 @@
+{
+   "type":"recipe",
+
+   "work_units"  : 10,
+   "recipe_name" : "Conveyor Belt",
+   "description" : "You are looking for a way to move many items? You have found it.",
+   "flavor" : "We are deeply moved that you have chosen Zulser to move your moveables.",
+   "portrait"    : "/zulser/entities/machinery/conveyor_belt/conveyor_belt_wm.png",
+   "level_requirement" : 4,
+
+   "ingredients": [
+      {
+         "material" : "wood resource",
+         "count" : 5
+      }
+  ],
+  
+  "produces": [
+      {
+        "item" : "zulser:machinery:conveyor_belt"
+      }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+   "craftable_recipes" : {
+      "machinery" : {
+         "ordinal" : 10,
+         "name" : "Machinery",
+         "recipes" : {
+            "conveyor_belt" : {
+               "recipe" : "file(conveyor_belt.json)"
+            }
+         }
+      }
+   }
+}
