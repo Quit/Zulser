@@ -15,6 +15,7 @@
    },
    
    "components" : {
-      "conveyor" : "file(components/conveyor.lua)"
+      "conveyor" : "file(components/conveyor.lua)",
+      "carry_block" : "file(components/carry_block.lua)"
    }
 }

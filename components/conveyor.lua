@@ -1,6 +1,5 @@
 local Point3 = _radiant.csg.Point3
 local Cube3 = _radiant.csg.Cube3
-local Point_Zero = Point3(0, 0, 0)
 
 local Conveyor = class()
 
@@ -19,20 +18,13 @@ function Conveyor:initialize(entity, json, ...)
   
   if self._sv.entities then
     radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
-      -- This might look odd, but we have to make sure that this function is called AFTER the lease component was loaded.
-      radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
-        for _, vessel in pairs(self._sv.entities) do
-          radiant.entities.for_all_children(vessel, function(entity)
-            assert(stonehearth.ai:acquire_ai_lease(entity, vessel), 'cannot re-acquire lease!')
-          end)
+      if self._sv.entities then
+        if #self._sv.entities > 0 then
+          self:_install_loop()
         end
-      end)
-      
-      if #self._sv.entities > 0 then
-        self:_install_loop()
+          
+        self:_on_position_change()
       end
-      
-      self:_on_position_change()
     end)
   else
     self._sv.entities = {}
@@ -146,20 +138,11 @@ function Conveyor:place_entity(entity)
   -- Is it already packaged?
   if entity:get_uri() ~= 'zulser:machinery:conveyor:vessel' then
     -- It isn't. Package it with bubblewrap.
-    local vessel = radiant.entities.create_entity('zulser:machinery:conveyor:vessel', { owner = radiant.entities.get_player_id(self._entity) })
-    radiant.terrain.place_entity(vessel, Point_Zero)
+    local vessel = radiant.entities.create_entity('zulser:machinery:conveyor:vessel') -- the carry_block component handles ownership
+    radiant.terrain.place_entity(vessel, Point3.zero)
     local pos = radiant.entities.world_to_local(radiant.entities.get_world_location(entity), self._entity)
     vessel:get_component('mob'):move_to(radiant.entities.get_world_grid_location(self._entity) + self.entity_offset + self.direction_abs * pos:dot(self.direction))
-    
-    -- Tell the AI to ignore this item.
-    if not stonehearth.ai:can_acquire_ai_lease(entity, vessel) then
-      radiant.entities.destroy_entity(vessel)
-      error('cannot acquire lease for entity!')
-      return
-    end
-  
-    assert(stonehearth.ai:acquire_ai_lease(entity, vessel), 'cannot acquire AI lease (although check said we could)')
-    radiant.entities.add_child(vessel, entity, Point_Zero)
+    vessel:add_component('zulser:carry_block'):set_carrying(entity)
     entity = vessel
   end
   
@@ -297,17 +280,19 @@ function Conveyor:_drop_entity(vessel, location)
   else
     -- Drop the item on the ground.
     local next_pos = (radiant.entities.get_world_location(self._entity) or radiant.entities.get_world_location(self._entity:get_component('stonehearth:entity_forms'):get_iconic_entity())) + self.direction * self.boundary
-    radiant.entities.for_all_children(vessel, function(entity)
-      if entity and entity:is_valid() then
-        radiant.entities.remove_child(vessel, entity)
-        stonehearth.ai:release_ai_lease(entity, vessel)
-        radiant.terrain.place_entity_at_exact_location(entity, next_pos) -- "exact" is still aligned to the grid. lies EVERYWHERE!
-        local mob = entity:get_component('mob')
-        -- Gravity Fails
-        mob:move_to(location) -- TODO: Check if next_pos + self.entity_offset or location is more convenient
-        mob:set_ignore_gravity(false)
-      end
-    end)
+    local carrier = vessel:get_component('zulser:carry_block')
+    local entity = carrier:get_carrying()
+    
+    if entity and entity:is_valid() then
+      carrier:set_carrying(nil)
+      local mob = entity:get_component('mob')
+      mob:set_ignore_gravity(false)
+      radiant.terrain.place_entity_at_exact_location(entity, next_pos) -- "exact" is still aligned to the grid. lies EVERYWHERE!
+      -- Gravity Fails
+      mob:set_ignore_gravity(false)
+      mob:move_to(location) -- TODO: Check if next_pos + self.entity_offset or location is more convenient
+      mob:set_ignore_gravity(false)
+    end
     
     -- Destroy the vessel
     radiant.entities.destroy_entity(vessel)
