@@ -16,6 +16,10 @@ function ProfessionLab:start()
   -- Carpenter
   local carpenter = microworld:place_citizen(0, 0, 'stonehearth:jobs:carpenter')
   microworld:create_workbench(carpenter, 5, 5)
+  local carpenter_job = carpenter:get_component('stonehearth:job')
+  for i = 1, 6 do
+    carpenter_job:_level_up()
+  end
 end
 
 return ProfessionLab
