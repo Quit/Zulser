@@ -4,12 +4,8 @@ local Point_Zero = Point3(0, 0, 0)
 
 local Conveyor = class()
 
-function Conveyor:initialize(entity, json)
+function Conveyor:initialize(entity, json, ...)
   self._sv = self.__saved_variables:get_data()
-  
-  if not self._sv.entities then
-    self._sv.entities = {}
-  end
   
   self._entity = entity
   -- At which point the entity is dropped down or passed onto the next conveyor; relative to the middle. A positive number.
@@ -20,6 +16,27 @@ function Conveyor:initialize(entity, json)
   self.entity_offset = Point3(0, assert(json.belt_height, 'missing json data: belt_height'), 0)
   -- To keep track of movement... usually, this means we've been deployed/undeployed.
   self._location_trace = radiant.entities.trace_grid_location(entity, 'adjust conveyor'):on_changed(function(...) self:_on_position_change(...) end)
+  
+  if self._sv.entities then
+    radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
+      -- This might look odd, but we have to make sure that this function is called AFTER the lease component was loaded.
+      radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
+        for _, vessel in pairs(self._sv.entities) do
+          radiant.entities.for_all_children(vessel, function(entity)
+            assert(stonehearth.ai:acquire_ai_lease(entity, vessel), 'cannot re-acquire lease!')
+          end)
+        end
+      end)
+      
+      if #self._sv.entities > 0 then
+        self:_install_loop()
+      end
+      
+      self:_on_position_change()
+    end)
+  else
+    self._sv.entities = {}
+  end
 end
 
 function Conveyor:destroy()
