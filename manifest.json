@@ -6,6 +6,7 @@
    
    "aliases" : {
       "machinery:conveyor_belt" : "file(entities/machinery/conveyor_belt)",
+      "machinery:conveyor_belt_mini" : "file(entities/machinery/conveyor_belt_mini)",
       "machinery:conveyor:vessel" : "file(entities/machinery/conveyor_belt/conveyor_vessel.json)"
    },
    

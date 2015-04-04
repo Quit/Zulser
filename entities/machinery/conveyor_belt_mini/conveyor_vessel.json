@@ -1,0 +1,10 @@
+{
+   "type" : "entity",
+   "components" : {
+      "mob" : {
+         "interpolate_movement" : true
+      },
+      
+      "zulser:carry_block" : {}
+   }
+}

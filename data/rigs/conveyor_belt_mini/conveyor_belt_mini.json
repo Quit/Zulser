@@ -1,0 +1,22 @@
+{
+   "skeleton" : {
+      "slat1": [0,-6,2.5],
+      "slat3": [0,-8.5,6],
+      "slat4": [0,-8,7.5],
+      "slat5": [0,-6,7.5],
+      "slat6": [0,-4,7.5],
+      "slat7": [0,-2,7.5],
+      "slat8": [0,0,7.5],
+      "slat9": [0,2,7.5],
+      "slat10": [0,4,7.5],
+      "slat11": [0,6,7.5],
+      "main": [0,0,3.5],
+      "slat12": [0,8,7.5],
+      "slat13": [0,8.5,6],
+      "slat2": [0,-8.5,4],
+      "slat1_0": [0,-8,2.5]
+    },
+   "animation_root" : "file(animations)",
+   "effects_root" : "file(effects)",
+   "postures" : "file(postures.json)"
+}
