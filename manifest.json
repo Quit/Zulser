@@ -4,6 +4,8 @@
       "name" : "Zulser Ltd."
    },
    
+   "server_init_script" : "file(zulser_server)",
+   
    "aliases" : {
       "machinery:conveyor_belt" : "file(entities/machinery/conveyor_belt)",
       "machinery:conveyor_belt_mini" : "file(entities/machinery/conveyor_belt_mini)",

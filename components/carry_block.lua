@@ -18,6 +18,10 @@ function CarryBlock:initialize(entity, json)
       radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
         assert(stonehearth.ai:acquire_ai_lease(self:get_carrying(), self._entity), 'cannot re-acquire lease!')
       end)
+      
+      if self._sv._fall_time then
+        self:_resume_falling()
+      end
     end)
   end
 end
@@ -62,6 +66,80 @@ function CarryBlock:set_carrying(new_item)
   assert(stonehearth.ai:acquire_ai_lease(new_item, self._entity), 'cannot acquire AI lease!')
   
   self:_create_carried_item_trace()
+end
+
+-- Drops this carrier down to whatever might be below
+-- Hint is the entity that we expect to land on - if none is supplied, the ground is assumed
+function CarryBlock:fall_down(pt)
+  local self_pos = radiant.entities.get_world_location(self._entity)
+  if not pt then
+    pt = radiant.terrain.get_standable_point(self._sv._carried_item, self_pos)
+  end
+  
+  -- Are we falling?
+  if self_pos.y > pt.y then
+    self:_start_falling(pt)
+  end 
+end
+
+function CarryBlock:_start_falling(pt)
+  self._sv._fall_start = radiant.entities.get_world_location(self._entity)
+  self._sv._fall_end = pt.y
+  self._sv._fall_time = radiant.gamestate.now()
+  self.__saved_variables:mark_changed()
+  
+  self:_resume_falling()
+end
+
+function CarryBlock:_resume_falling()
+  self._tick_listener = stonehearth.calendar:set_interval(1, function() self:_on_tick() end)  
+  self._mob = self._entity:get_component('mob')
+end
+
+function CarryBlock:_stop_falling()
+  if self._tick_listener then
+    self._tick_listener:destroy()
+  end
+  
+  self._sv._fall_start, self._sv._fall_end = nil, nil, nil
+  self._sv._fall_time = nil
+  
+  self.__saved_variables:mark_changed()
+end
+
+local fall_direction = Point3(0, -1, 0)
+local fall_acceleration = Point3(0, -9.81, 0) 
+
+function CarryBlock:_on_tick()
+  local start, stop = self._sv._fall_start, self._sv._fall_end
+  local t = (radiant.gamestate.now() - self._sv._fall_time) / 1000
+  
+  -- (-5, 15.8, 14.2)	0.05	(0, -1, 0)	(0, -1, 0)
+  local current  = start + (fall_direction + fall_acceleration*0.5*t)*t
+  if current.y < stop then
+    current.y = stop
+    radiant.entities.move_to(self._entity, current)
+    self:_stop_falling()
+    
+    -- If we weren't placed on a machine; we're not required anymore - therefore, remove us
+    if not zulser.automation.place_entity(self._entity, current) then
+      self:_unwrap()
+    end
+    return
+  end
+  
+  self._mob:move_to(current)
+end
+
+-- Releases the entity within
+function CarryBlock:_unwrap()
+  local pos = radiant.entities.get_world_location(self._entity)
+  local carrying = self._sv._carried_item
+  self:_remove_carrying()
+  radiant.terrain.place_entity_at_exact_location(carrying, pos)
+  
+  -- We have fulfilled our purpose. Commit sudoku
+  radiant.entities.destroy_entity(self._entity)
 end
 
 function CarryBlock:_remove_carrying()

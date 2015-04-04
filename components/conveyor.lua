@@ -95,11 +95,18 @@ function Conveyor:_on_chain_update(origin)
   end
   
   -- Do we have an entity in front of us?
-  local next_pos = radiant.entities.get_world_location(self._entity) + self.direction * self.boundary
-  local _, conveyor = next(radiant.terrain.get_entities_at_point(next_pos, function(ent) return ent ~= self._entity and ent:get_component('zulser:conveyor') ~= nil end))
+  local self_pos = radiant.entities.get_world_location(self._entity)
   
-  -- If we do have a conveyor
-  if conveyor ~= nil then
+  local next_pos = radiant.terrain.get_point_on_terrain(self_pos + self.direction * self.boundary)
+  local conveyor = zulser.automation.get_machine_at(next_pos)
+  
+  -- If we found a machine, but not a conveyor...
+  if conveyor and not conveyor:get_component('zulser:conveyor') then
+    conveyor = nil
+  end
+  
+  -- If we do have a conveyor, and it's below-or-equal
+  if next_pos.y <= self_pos.y and conveyor ~= nil then
     -- If it's a different conveyor than our current next
     if conveyor ~= self._next then
       -- destroy the current listener, if any
@@ -112,25 +119,42 @@ function Conveyor:_on_chain_update(origin)
     end
     
     -- Update our contact information accordingly
-    self._next, self._destination = conveyor, conveyor:get_component('zulser:conveyor')._destination or conveyor
+    self._next, self._next_drop, self._destination = conveyor, next_pos.y < self_pos.y, conveyor:get_component('zulser:conveyor')._destination or conveyor
     
     -- If our destination would be our entity, congratulations, we've got a loop.
     if self._destination == self._entity then
       -- Resolve the loop.
       (origin or self._entity):get_component('zulser:conveyor'):_handle_loops()
       -- Not strictly necessary, because _handle_loop will already resolve the loop... but better safe than sorry?
-      self._next, self._destination = nil, nil
+      self._next, self._destination, self._next_drop = nil, nil, nil
       return
     end
   -- Whatever we have in front of us is *not* a conveyor.
   else
-    self._next, self._destination = nil, nil
+    self._next, self._destination, self._next_drop = nil, nil, nil
   end
   
   -- Trigger it again, but avoid infinite recursion. With the new loop handling, this case shouldn't happen... in theory.
   if self._entity ~= origin then
     radiant.events.trigger(self._entity, 'zulser:conveyor_chain_update', origin or self._entity)
   end
+end
+
+-- TODO: figure out if something like this already exists
+local function bound_by(value, min, max)
+  if value < min then
+    return min
+  elseif value > max then
+    return max
+  else
+    return value
+  end
+end
+
+-- Translates a world-position to a position on the belt
+function Conveyor:get_entry_point(world_pos)
+  local pos = radiant.entities.world_to_local(world_pos, self._entity)
+  return radiant.entities.get_world_grid_location(self._entity) + self.entity_offset + self.direction_abs * bound_by(pos:dot(self.direction), -self.boundary, self.boundary)
 end
 
 -- Adds an entity onto this conveyor.
@@ -140,8 +164,7 @@ function Conveyor:place_entity(entity)
     -- It isn't. Package it with bubblewrap.
     local vessel = radiant.entities.create_entity('zulser:machinery:conveyor:vessel') -- the carry_block component handles ownership
     radiant.terrain.place_entity(vessel, Point3.zero)
-    local pos = radiant.entities.world_to_local(radiant.entities.get_world_location(entity), self._entity)
-    vessel:get_component('mob'):move_to(radiant.entities.get_world_grid_location(self._entity) + self.entity_offset + self.direction_abs * pos:dot(self.direction))
+    vessel:get_component('mob'):move_to(self:get_entry_point(radiant.entities.get_world_location(entity)))
     vessel:add_component('zulser:carry_block'):set_carrying(entity)
     entity = vessel
   end
@@ -173,7 +196,7 @@ function Conveyor:_on_position_change()
     end
     
     -- Burn all bridges.
-    self._next, self._destination = nil, nil
+    self._next, self._destination, self._next_drop = nil, nil, nil
     self.direction, self.direction_abs = nil, nil
     self._sv.entities = {} -- normally, we remove the entities at the same time. Right now, we assume that we've dropped all off anyway.
     
@@ -257,6 +280,7 @@ function Conveyor:_on_gameloop()
     if (new_pos - local_pos):dot(dir) >= self.boundary then
       -- Remove it from our list of tracked entities
       table.remove(self._sv.entities, i)
+      self.__saved_variables:mark_changed()
       -- and get rid of it enitrely
       self:_drop_entity(entity, new_pos)
     else
@@ -275,27 +299,16 @@ end
 -- Drops an entity; either on the floor or onto the next conveyor
 function Conveyor:_drop_entity(vessel, location)
   if self._next then
-    -- Pass it on. May the legacy live!
-    self._next:get_component('zulser:conveyor'):place_entity(vessel)
+    -- Is the next stage dropped?
+    if self._next_drop then
+      vessel:get_component('zulser:carry_block'):fall_down(self._next:get_component('zulser:conveyor'):get_entry_point(radiant.entities.get_world_location(vessel)))
+    else
+      -- Pass it on. May the legacy live!
+      self._next:get_component('zulser:conveyor'):place_entity(vessel)
+    end
   else
     -- Drop the item on the ground.
-    local next_pos = (radiant.entities.get_world_location(self._entity) or radiant.entities.get_world_location(self._entity:get_component('stonehearth:entity_forms'):get_iconic_entity())) + self.direction * self.boundary
-    local carrier = vessel:get_component('zulser:carry_block')
-    local entity = carrier:get_carrying()
-    
-    if entity and entity:is_valid() then
-      carrier:set_carrying(nil)
-      local mob = entity:get_component('mob')
-      mob:set_ignore_gravity(false)
-      radiant.terrain.place_entity_at_exact_location(entity, next_pos) -- "exact" is still aligned to the grid. lies EVERYWHERE!
-      -- Gravity Fails
-      mob:set_ignore_gravity(false)
-      mob:move_to(location) -- TODO: Check if next_pos + self.entity_offset or location is more convenient
-      mob:set_ignore_gravity(false)
-    end
-    
-    -- Destroy the vessel
-    radiant.entities.destroy_entity(vessel)
+    vessel:get_component('zulser:carry_block'):fall_down()
   end
 end
 
