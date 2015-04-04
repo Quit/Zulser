@@ -2,8 +2,8 @@ local World = class()
 local Point3 = _radiant.csg.Point3
 
 local ci = 1
-local function create_conveyor(x, z, rot, resource)
-   local ent = microworld:place_entity('zulser:machinery:conveyor_belt', x, z, { full_size = true, owner = microworld:get_local_player_id() })
+local function create_conveyor(x, z, rot, resource, mini)
+   local ent = microworld:place_entity(('zulser:machinery:conveyor_belt' .. (mini and '_mini' or '')), x, z, { full_size = true, owner = microworld:get_local_player_id() })
    radiant.entities.turn_to(ent, rot)
    radiant.entities.set_display_name(ent, 'C ' .. ci)
    ci = ci + 1
@@ -33,17 +33,20 @@ function World:start()
    local owner = microworld:get_local_player_id()
    
    microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -4, 3, 3)
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', 1, 1, 3, 3)
    
    microworld:create_terrain({ base = Point3(0, 0, 48), dimension = Point3(64, 15, 64) }, 'rock_layer_1')
    microworld:create_terrain({ base = Point3(0, 15, 48), dimension = Point3(64, 5, 32) }, 'rock_layer_2')
    
-   create_conveyor(-5, 21, 180)
-   create_conveyor(-5, 17, 180)
-   create_conveyor(-5, 13, 180)
+   create_conveyor(-15, 21, 180)
+   create_conveyor(-15, 17, 180)
+   create_conveyor(-15, 13, 180)
+   create_conveyor(-15, 10, 180, nil, 'mini')
    
-   create_conveyor(5, 21, 0)
-   create_conveyor(5, 17, 0)
-   create_conveyor(5, 13, 0)
+   create_conveyor(15, 21, 0)
+   create_conveyor(15, 17, 0)
+   create_conveyor(15, 13, 0)
+   create_conveyor(15, 10, 0, nil, 'mini')
    
 --~    for i = -28, -8, 4 do
 --~       create_conveyor(0, i, 0)
