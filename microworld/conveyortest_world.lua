@@ -33,6 +33,7 @@ function World:start()
    local owner = microworld:get_local_player_id()
    
    microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -4, 3, 3)
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', 1, 1, 3, 3)
    
    microworld:create_terrain({ base = Point3(0, 0, 64), dimension = Point3(64, 15, 64) }, 'rock_layer_1')
    microworld:create_terrain({ base = Point3(0, 15, 64), dimension = Point3(64, 5, 32) }, 'rock_layer_2')
