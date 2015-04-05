@@ -137,7 +137,7 @@ function CarryBlock:_unwrap()
   local carrying = self._sv._carried_item
   self:_remove_carrying()
   radiant.terrain.place_entity_at_exact_location(carrying, pos)
-  
+  radiant.entities.turn_to(carrying, self._mob:get_facing())
   -- We have fulfilled our purpose. Commit sudoku
   radiant.entities.destroy_entity(self._entity)
 end

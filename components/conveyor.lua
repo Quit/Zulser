@@ -169,6 +169,8 @@ function Conveyor:place_entity(entity)
     entity = vessel
   end
   
+  radiant.entities.turn_to(entity, self.rotation)
+
   -- Insert the entity into the list of our entities.
   table.insert(self._sv.entities, entity)
   self.__saved_variables:mark_changed()
@@ -207,16 +209,13 @@ function Conveyor:_on_position_change()
     
     self.__saved_variables:mark_changed()
   else -- We were just placed, or moved.
-    local rot = self._entity:get_component('mob'):get_rotation()
+    local deg = self._entity:get_component('mob'):get_facing()
+    local rad = deg / 180 * math.pi
     
-    -- I really wish there was a Quaternion.yaw.
-    local q0, q1, q2, q3 = rot.w, rot.x, rot.z, rot.y
-    
-    local deg = math.atan2(2*(q0*q3 + q1*q2), 1-2*(q2*q2 + q3*q3))
-    
-    self.direction = Point3(math.sin(deg) * self.speed, 0, math.cos(deg) * self.speed)
+    self.direction = Point3(math.sin(rad) * self.speed, 0, math.cos(rad) * self.speed)
     self.direction:normalize()
     self.direction_abs = Point3(math.abs(self.direction.x), math.abs(self.direction.y), math.abs(self.direction.z))
+    self.rotation = deg
     
     -- Update any possible chain.
     local pos = radiant.entities.get_world_location(self._entity)
