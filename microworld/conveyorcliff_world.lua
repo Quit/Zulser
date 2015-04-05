@@ -28,55 +28,22 @@ local function poof()
    return microworld:place_entity('stonehearth:resources:wood:oak_log', math.random(-30, 30), math.random(-30, 30), { full_size = false, owner = microworld:get_local_player_id() })
 end
 
-local stockpile
-
 function World:start()
    microworld:create_world(64)
    for i = 1, 10 do
-      microworld:place_citizen(math.sin(i*math.pi/5)*5, math.cos(i*math.pi/5)*5)
+      microworld:place_citizen(math.sin(i*math.pi/5)*5, math.cos(i*math.pi/5)*5 - 20)
    end
    
+   microworld:create_terrain({ base = Point3(16, 10, 16), dimension = Point3(32, 1, 32) }, 'rock_layer_1')
+   microworld:create_terrain({ base = Point3(16, 11, 17), dimension = Point3(32, 1, 30) }, 'rock_layer_2')
+   microworld:create_terrain({ base = Point3(16, 12, 18), dimension = Point3(32, 1, 28) }, 'rock_layer_3')
+   microworld:create_terrain({ base = Point3(16, 13, 19), dimension = Point3(32, 1, 26) }, 'rock_layer_4')
+   
    local owner = microworld:get_local_player_id()
-   
-   microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -4, 3, 3)
-   microworld:place_entity_cluster('stonehearth:resources:wood:oak_log', -4, 1, 3, 3)
-   microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', 1, 1, 3, 3)
-   
-   microworld:create_terrain({ base = Point3(0, 0, 48), dimension = Point3(64, 15, 64) }, 'rock_layer_1')
-   microworld:create_terrain({ base = Point3(0, 15, 48), dimension = Point3(64, 5, 32) }, 'rock_layer_2')
-   microworld:create_terrain({ base = Point3(0, 30, 48), dimension = Point3(64, 3, 64) }, 'rock_layer_6')
-   microworld:create_terrain({ base = Point3(0, 0, 64), dimension = Point3(64, 100, 5) }, 'rock_layer_6')
-   
-  for _, y in pairs({ 15, 33 }) do
-    create_conveyor_y(-15, y, 21, 180)
-    create_conveyor_y(-15, y, 17, 180)
 
-    create_conveyor_y(-10, y, 21, 180)
-    create_conveyor_y(-10, y, 17, 180)
-
-    create_conveyor_y(15, y, 21, 0)
-    create_conveyor_y(15, y, 17, 0)
-  end  
-  
-  create_conveyor(-15, 13, 180)
-  create_conveyor(-15, 10, 180, nil, 'mini')  
-  
-  create_conveyor(-10, 13, 180)
-  create_conveyor(-10, 10, 180, nil, 'mini')
-    
-  create_conveyor(15, 13, 0)
-  create_conveyor(15, 10, 0, nil, 'mini')
---~    for i = -28, -8, 4 do
---~       create_conveyor(0, i, 0)
---~       create_conveyor(0, -i, 180)
---~       create_conveyor(i, 0, 90)
---~    end
-   
-   stockpile = microworld:place_stockpile(-4, -4, 8, 8)
-   
---~    for i = 1, 40 do
---~       poof()
---~    end
+   microworld:place_stockpile(-4, -24, 8, 8)
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -24, 3, 3, { owner = owner })
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', -4, -19, 3, 3, { owner = owner })
 end
 
 return World
