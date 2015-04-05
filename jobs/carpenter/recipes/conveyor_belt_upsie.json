@@ -1,0 +1,23 @@
+{
+   "type":"recipe",
+
+   "work_units"  : 5,
+   "recipe_name" : "Conveyor Belt Upsie",
+   "description" : "For those tight spaces.",
+   "flavor" : "We are deeply moved that you have chosen Zulser to move your moveables.",
+   "portrait"    : "/zulser/entities/machinery/conveyor_belt_mini/conveyor_belt_mini_wm.png",
+   "level_requirement" : 4,
+
+   "ingredients": [
+      {
+         "material" : "wood resource",
+         "count" : 2
+      }
+  ],
+  
+  "produces": [
+      {
+        "item" : "zulser:machinery:conveyor_belt_upsie"
+      }
+  ]
+}
