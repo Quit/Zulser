@@ -12,6 +12,10 @@
       {
          "material" : "stone resource",
          "count" : 5
+      },
+            {
+         "material" : "wood resource",
+         "count" : 2
       }
   ],
   
