@@ -1,0 +1,37 @@
+{
+   "type": "entity",
+   "mixins": "file(conveyor_belt_upsie_ghost.json)",
+   "components": {
+      "stonehearth:entity_forms": {
+         "iconic_form": "file(conveyor_belt_upsie_iconic.json)",
+         "ghost_form": "file(conveyor_belt_upsie_ghost.json)",
+         "placeable_on_ground" : true
+      },
+      
+      "mob" : { "region_origin" : { "x" : 0.5, "y" : 0, "z" : 0.5 } },
+      
+      "region_collision_shape": {
+         "region": [
+            {
+               "min" : { "x" : -0.5, "y" : 0, "z" : -0.5 },
+               "max" : { "x" :  1.5, "y" : 1, "z" :  0.5 }
+            }
+         ]
+      },
+      
+      "destination" : {
+         "region" : [
+            {
+               "min" : { "x" : -0.5, "y" : 0, "z" : -0.5 },
+               "max" : { "x" : 1.5, "y" : 1, "z" : 1.5 }
+            }
+         ]
+      },
+      
+      "zulser:conveyor" : {
+         "belt_height" : 0.8,
+         "belt_speed" : 1,
+         "boundary" : 2
+      }
+   }
+}

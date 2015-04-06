@@ -1,0 +1,14 @@
+{
+   "skeleton" : {
+      "mainbody1": [0,0,8.5],
+      "mainbody2": [0,-0.971651,9.52387]
+    },
+   "animation_root" : "file(animations)",
+   "effects_root" : "file(effects)",
+   "postures" : "file(postures.json)",
+   "collision_shape" : {
+      "type" : "cylinder_collision_shape",
+      "radius" : 5,
+      "height" : 35
+   }
+}
