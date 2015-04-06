@@ -212,7 +212,7 @@ function Conveyor:_on_position_change()
     local deg = self._entity:get_component('mob'):get_facing()
     local rad = deg / 180 * math.pi
     
-    self.direction = Point3(math.sin(rad) * self.speed, 0, math.cos(rad) * self.speed)
+    self.direction = Point3(math.sin(rad), 0, math.cos(rad))
     self.direction:normalize()
     self.direction_abs = Point3(math.abs(self.direction.x), math.abs(self.direction.y), math.abs(self.direction.z))
     self.rotation = deg
@@ -267,7 +267,7 @@ function Conveyor:_on_gameloop()
     return
   end
   
-  local dir = self.direction
+  local dir = self.direction * self.speed
   
   -- Because dropped-off entities are immediately removed, we're using a while instead of for
   -- (plus, technically, this is kind of faster)
