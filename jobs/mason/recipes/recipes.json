@@ -6,6 +6,9 @@
          "recipes" : {
             "stone_conveyor_belt" : {
                "recipe" : "file(stone_conveyor_belt.json)"               
+               }, 
+            "stone_conveyor_belt_mini" : {
+               "recipe" : "file(stone_conveyor_belt_mini.json)"               
                } 
          }
       }

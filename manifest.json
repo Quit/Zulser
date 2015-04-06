@@ -10,6 +10,7 @@
       "machinery:conveyor_belt" : "file(entities/machinery/conveyor_belt)",
       "machinery:stone_conveyor_belt" : "file(entities/machinery/stone_conveyor_belt)",
       "machinery:conveyor_belt_mini" : "file(entities/machinery/conveyor_belt_mini)",
+      "machinery:stone_conveyor_belt_mini" : "file(entities/machinery/stone_conveyor_belt_mini)",
       "machinery:conveyor_belt_upsie" : "file(entities/machinery/conveyor_belt_upsie)",
       "machinery:conveyor:vessel" : "file(entities/machinery/conveyor_belt/conveyor_vessel.json)"
    },

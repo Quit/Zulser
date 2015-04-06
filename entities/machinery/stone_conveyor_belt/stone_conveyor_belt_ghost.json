@@ -16,12 +16,12 @@
             }
         },
         "unit_info": {
-            "name": "Conveyor Belt",
+            "name": "Stone Conveyor Belt",
             "description": "Moves things so you don't have to.",
             "icon": "file(stone_conveyor_belt.png)"
         },
         "stonehearth:material": {
-            "tags": "wood machinery crafted"
+            "tags": "stone machinery crafted"
         }
     }
 }
