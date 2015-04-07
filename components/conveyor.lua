@@ -192,14 +192,15 @@ function Conveyor:_on_position_change()
     -- Inform others that we are of irrelevant now
     radiant.events.trigger(self._entity, 'zulser:conveyor_chain_update', self._entity)
     
+    -- Burn all bridges.
+    self._next, self._destination, self._next_drop = nil, nil, nil
+    self.direction, self.direction_abs = nil, nil
+    
     -- Drop entities that we were still transporting
     for _, entity in pairs(self._sv.entities) do
       self:_drop_entity(entity, radiant.entities.get_world_location(entity)) -- TODO: test this. If you read this while looking for the issue of this bug, hi
     end
     
-    -- Burn all bridges.
-    self._next, self._destination, self._next_drop = nil, nil, nil
-    self.direction, self.direction_abs = nil, nil
     self._sv.entities = {} -- normally, we remove the entities at the same time. Right now, we assume that we've dropped all off anyway.
     
     self:_uninstall_loop()
@@ -301,7 +302,7 @@ end
 -- Drops an entity; either on the floor or onto the next conveyor
 function Conveyor:_drop_entity(vessel, location)
   if self._next then
-    -- Is the next stage dropped?
+    -- Is the next stage dropped? 
     if self._next_drop then
       vessel:get_component('zulser:carry_block'):fall_down(self._next:get_component('zulser:conveyor'):get_entry_point(radiant.entities.get_world_location(vessel)))
     else
