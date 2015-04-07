@@ -36,6 +36,10 @@ end
 
 function DropCarryingInStockpile:run(ai, entity, args)
   local carrying = radiant.entities.get_carrying(entity)
+  if not carrying then
+    ai:abort 'not carrying anything anymore'
+  end
+  
   ai:execute('stonehearth:follow_path', { path = self._path })
   
   -- Ugly like hell, but we haven't got a real choice: It's possible that the conveyor has been undeployed.
@@ -52,20 +56,16 @@ function DropCarryingInStockpile:run(ai, entity, args)
   ai:execute('stonehearth:drop_carrying_now')
   stonehearth.ai:release_ai_lease(carrying, entity)
   
-  -- TODO: Figure out a better check... For realsies.
-  if radiant.entities.get_world_grid_location(self._conveyor) then
+  if radiant.entities.exists_in_world(self._conveyor) then
     self._conveyor:get_component('zulser:conveyor'):place_entity(carrying)
   end
---~   print('we are so done here')
 end
 
 -- Finds either a convenient conveyor or 
 function DropCarryingInStockpile:_filter_fn(entity)
   local conveyor = entity:get_component('zulser:conveyor')
   local final_conveyor = conveyor and conveyor:get_destination()
---~   print('filter_fn', entity, conveyor, conveyor and (conveyor:get_destination() or entity), self._stockpile, self._ai.CURRENT.location)
   if entity == self._stockpile then
---~     print(self, 'found stockpile', entity)
     return true
   elseif final_conveyor then
     -- We're doing this weird thing because it's possible that we find a conveyor that was just recently undeployed
