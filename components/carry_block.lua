@@ -48,7 +48,14 @@ function CarryBlock:set_carrying(new_item)
   if new_item == self._sv._carried_item then
     return
   end
-
+  
+  -- Adjust our ownership to that of the entity; necessary to get the AI lease working
+  radiant.entities.set_player_id(self._entity, new_item)
+  
+  -- If getting the lease was not possible; return.
+  -- assert instead of if-then-return.
+  assert(stonehearth.ai:can_acquire_ai_lease(new_item, self._entity), 'cannot request lease on entity')
+  
   if self._sv._carried_item then
     self:_destroy_carried_item_trace()
   end
@@ -58,9 +65,6 @@ function CarryBlock:set_carrying(new_item)
   log:info('%s adding %s to carry bone', self._entity, new_item)
   self._entity:add_component 'entity_container':add_child_to_bone(new_item, 'carry')
   radiant.entities.move_to(new_item, Point3.zero)
-  
-  -- Adjust our ownership to that of the entity
-  radiant.entities.set_player_id(self._entity, new_item)
   
   -- Create an AI lease
   assert(stonehearth.ai:acquire_ai_lease(new_item, self._entity), 'cannot acquire AI lease!')
