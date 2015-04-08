@@ -12,7 +12,9 @@
       "machinery:conveyor_belt_mini" : "file(entities/machinery/conveyor_belt_mini)",
       "machinery:stone_conveyor_belt_mini" : "file(entities/machinery/stone_conveyor_belt_mini)",
       "machinery:conveyor_belt_upsie" : "file(entities/machinery/conveyor_belt_upsie)",
-      "machinery:conveyor:vessel" : "file(entities/machinery/conveyor_belt/conveyor_vessel.json)"
+      "machinery:conveyor:vessel" : "file(entities/machinery/conveyor_belt/conveyor_vessel.json)",
+      
+      "mixins:base_machine_iconic" : "file(mixins/base_machine_iconic.json)"
    },
    
    "mixintos" : {

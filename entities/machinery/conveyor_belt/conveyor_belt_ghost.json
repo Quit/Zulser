@@ -21,7 +21,7 @@
             "icon": "file(conveyor_belt.png)"
         },
         "stonehearth:material": {
-            "tags": "wood machinery crafted"
+            "tags": "wood machinery crafted tool"
         }
     }
 }

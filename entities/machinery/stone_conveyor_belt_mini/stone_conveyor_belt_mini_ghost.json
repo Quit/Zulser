@@ -21,7 +21,7 @@
             "icon": "file(stone_conveyor_belt_mini.png)"
         },
         "stonehearth:material": {
-            "tags": "stone machinery crafted"
+            "tags": "stone machinery crafted tool"
         }
     }
 }
