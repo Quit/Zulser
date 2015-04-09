@@ -3,7 +3,7 @@ local Point3 = _radiant.csg.Point3
 
 local ci = 1
 local function create_conveyor(x, z, rot, resource, mini)
-   local ent = microworld:place_entity(('zulser:machinery:conveyor_belt' .. (mini and '_mini' or '')), x, z, { full_size = true, owner = microworld:get_local_player_id() })
+   local ent = microworld:place_entity(('zulser:machinery:conveyor_belt:wood' .. (mini and ':mini' or '')), x, z, { full_size = true, owner = microworld:get_local_player_id() })
    radiant.entities.turn_to(ent, rot)
    radiant.entities.set_display_name(ent, 'C ' .. ci)
    ci = ci + 1
@@ -42,8 +42,8 @@ function World:start()
    local owner = microworld:get_local_player_id()
 
    microworld:place_stockpile(-4, -24, 8, 8)
-   microworld:place_entity_cluster('zulser:machinery:conveyor_belt', -4, -24, 3, 3, { owner = owner })
-   microworld:place_entity_cluster('zulser:machinery:conveyor_belt_mini', -4, -19, 3, 3, { owner = owner })
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt:wood', -4, -24, 3, 3, { owner = owner })
+   microworld:place_entity_cluster('zulser:machinery:conveyor_belt:wood:mini', -4, -19, 3, 3, { owner = owner })
 end
 
 return World

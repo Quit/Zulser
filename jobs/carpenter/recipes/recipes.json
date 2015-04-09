@@ -6,13 +6,11 @@
          "recipes" : {
             "conveyor_belt_mini" : {
                "recipe" : "file(conveyor_belt_mini.json)"
-               },
-            "conveyor_belt_upsie" : {
-               "recipe" : "file(conveyor_belt_upsie.json)"               
-               },
+            },
+            
             "conveyor_belt" : {
                "recipe" : "file(conveyor_belt.json)"               
-               } 
+            } 
          }
       }
    }

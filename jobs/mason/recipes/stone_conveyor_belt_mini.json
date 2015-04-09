@@ -3,7 +3,7 @@
 
    "work_units"  : 10,
    "recipe_name" : "Stone Conveyor Belt Mini",
-   "description" : "You are looking for a way to move many items? You have found it.",
+   "description" : "Like its wooden counterpart, but more reliable.",
    "flavor" : "We are deeply moved that you have chosen Zulser to move your moveables.",
    "portrait"    : "/zulser/entities/machinery/stone_conveyor_belt_mini/stone_conveyor_belt_mini_wm.png",
    "level_requirement" : 4,
@@ -21,7 +21,7 @@
   
   "produces": [
       {
-        "item" : "zulser:machinery:stone_conveyor_belt_mini"
+        "item" : "zulser:machinery:conveyor_belt:wood:mini"
       }
   ]
 }
