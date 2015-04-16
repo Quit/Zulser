@@ -44,6 +44,10 @@ function World:start()
       create_conveyor(i, 0, 90)
    end
    
+   create_conveyor(0, -5, 0, nil, 'stone:mini')
+   create_conveyor(0, 5, 180, nil, 'wood:mini')
+   create_conveyor(-5, 0, 90, nil, 'wood:mini')
+   
    stockpile = microworld:place_stockpile(-4, -4, 8, 8)
    
    for i = 1, 40 do
