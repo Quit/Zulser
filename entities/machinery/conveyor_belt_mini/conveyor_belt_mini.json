@@ -30,7 +30,7 @@
       
       "zulser:conveyor" : {
          "belt_height" : 0.8,
-         "belt_speed" : 1,
+         "belt_speed" : 0.6,
          "boundary" : 2
       }
    }

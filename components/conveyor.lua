@@ -13,6 +13,9 @@ function Conveyor:initialize(entity, json, ...)
   self.speed = assert(json.belt_speed, 'missing json data: belt_speed')
   -- Distance from the center that new items start off; technically just used for the height.
   self.entity_offset = Point3(0, assert(json.belt_height, 'missing json data: belt_height'), 0)
+  -- Effect that is played when the conveyor is currently moving something. Defaults to 'on'.
+  self.on_effect = json.on_effect or 'on'
+  
   -- To keep track of movement... usually, this means we've been deployed/undeployed.
   self._location_trace = radiant.entities.trace_grid_location(entity, 'adjust conveyor'):on_changed(function(...) self:_on_position_change(...) end)
   
@@ -242,7 +245,7 @@ function Conveyor:_install_loop()
   self._last_update = radiant.gamestate.now()
   if #self._sv.entities then
     self._loop = stonehearth.calendar:set_interval(1, function() self:_on_gameloop() end)
-    self:_set_effect('on')
+    self:_set_effect(self.on_effect)
   end
 end
 
