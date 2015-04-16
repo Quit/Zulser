@@ -268,7 +268,8 @@ function Conveyor:_on_gameloop()
     return
   end
   
-  local dir = self.direction * self.speed
+  local offset = self.direction * self.speed * diff
+  local dir = self.direction
   
   -- Because dropped-off entities are immediately removed, we're using a while instead of for
   -- (plus, technically, this is kind of faster)
@@ -276,7 +277,7 @@ function Conveyor:_on_gameloop()
   while i <= #self._sv.entities do
     local entity = self._sv.entities[i]
     local mob = entity:get_component('mob')
-    local new_pos = mob:get_location() + dir * diff
+    local new_pos = mob:get_location() + offset
     mob:move_to(new_pos)
 
     -- If the item would be dropped off
