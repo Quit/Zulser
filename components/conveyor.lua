@@ -8,16 +8,21 @@ function Conveyor:initialize(entity, json, ...)
   
   self._entity = entity
   -- At which point the entity is dropped down or passed onto the next conveyor; relative to the middle. A positive number.
-  self.boundary = assert(json.boundary, 'missing json data: boundary')
+  self.boundary = assert(tonumber(json.boundary), 'missing json data: boundary')
+  -- At which point the entity will cause the next conveyor to spin up already
+  self.prewarm_boundary = json.prewarm_boundary or math.huge
   -- units/second that we move items forwards.
   self.speed = assert(json.belt_speed, 'missing json data: belt_speed')
   -- Distance from the center that new items start off; technically just used for the height.
   self.entity_offset = Point3(0, assert(json.belt_height, 'missing json data: belt_height'), 0)
   -- Effect that is played when the conveyor is currently moving something. Defaults to 'on'.
   self.on_effect = json.on_effect or 'on'
-  
   -- To keep track of movement... usually, this means we've been deployed/undeployed.
   self._location_trace = radiant.entities.trace_grid_location(entity, 'adjust conveyor'):on_changed(function(...) self:_on_position_change(...) end)
+  
+  -- Because we're shoving the entities way outside our boundary, the next conveyor needs to be "preinformed" of this thing. So we keep a list of both
+  -- entities that are heading our way (incoming) and about to leave (outgoing). list[vessel_id] = vessel.
+  self._incoming_entities, self._outgoing_entities = {}, {}
   
   if self._sv.entities then
     radiant.events.listen_once(radiant, 'radiant:game_loaded', function()
@@ -123,6 +128,7 @@ function Conveyor:_on_chain_update(origin)
     
     -- Update our contact information accordingly
     self._next, self._next_drop, self._destination = conveyor, next_pos.y < self_pos.y, conveyor:get_component('zulser:conveyor')._destination or conveyor
+    self.prewarming = not self._next_drop
     
     -- If our destination would be our entity, congratulations, we've got a loop.
     if self._destination == self._entity then
@@ -134,7 +140,7 @@ function Conveyor:_on_chain_update(origin)
     end
   -- Whatever we have in front of us is *not* a conveyor.
   else
-    self._next, self._destination, self._next_drop = nil, nil, nil
+    self._next, self._destination, self._next_drop, self.prewarming = nil, nil, nil, false
   end
   
   -- Trigger it again, but avoid infinite recursion. With the new loop handling, this case shouldn't happen... in theory.
@@ -279,17 +285,23 @@ function Conveyor:_on_gameloop()
   local i = 1
   while i <= #self._sv.entities do
     local entity = self._sv.entities[i]
-    local mob = entity:get_component('mob')
+    local mob = entity:get_component('mob') -- TODO: Because we keep track of the entities, maybe it would be wise to keep track of the mob component too? And its entity ID.
     local new_pos = mob:get_location() + offset
     mob:move_to(new_pos)
 
     -- If the item would be dropped off
-    if (new_pos - local_pos):dot(dir) >= self.boundary then
+    local progress = (new_pos - local_pos):dot(dir)
+    if progress >= self.boundary then
       -- Remove it from our list of tracked entities
       table.remove(self._sv.entities, i)
       self.__saved_variables:mark_changed()
       -- and get rid of it enitrely
       self:_drop_entity(entity, new_pos)
+    -- Do we need to do some prewarming?
+    elseif self.prewarming and progress >= self.prewarm_boundary and not self._outgoing_entities[entity:get_id()] then
+      self._outgoing_entities[entity:get_id()] = entity
+      self._next:get_component('zulser:conveyor'):_prewarm(entity)
+      i = i + 1
     else
       -- Otherwise, it's still being transported - move on to the next entity.
       i = i + 1
@@ -298,7 +310,7 @@ function Conveyor:_on_gameloop()
   
   -- If there's no entity around anymore, uninstall the loop
   -- (similar to #self._sv.entities, but without the unnecessary counting)
-  if not self._sv.entities[1] then
+  if not self._sv.entities[1] and not next(self._incoming_entities) then -- TODO: Maybe use a bool for active prewarming, rather than next()?
     self:_uninstall_loop()
   end
 end
@@ -306,6 +318,13 @@ end
 -- Drops an entity; either on the floor or onto the next conveyor
 function Conveyor:_drop_entity(vessel, location)
   if self._next then
+    -- Did we have a prewarm on it?
+    if self._outgoing_entities[vessel:get_id()] then
+      self._next:get_component('zulser:conveyor'):_remove_prewarm(vessel)
+      -- Only clean memory is good memory. Or something.
+      self._outgoing_entities[vessel:get_id()] = nil
+    end
+    
     -- Is the next stage dropped? 
     if self._next_drop then
       vessel:get_component('zulser:carry_block'):fall_down(self._next:get_component('zulser:conveyor'):get_entry_point(radiant.entities.get_world_location(vessel)))
@@ -317,6 +336,17 @@ function Conveyor:_drop_entity(vessel, location)
     -- Drop the item on the ground.
     vessel:get_component('zulser:carry_block'):fall_down()
   end
+end
+
+-- Tells this conveyor that `entity` is on its way here.
+function Conveyor:_prewarm(entity)
+  self._incoming_entities[entity:get_id()] = entity
+  self:_install_loop()
+end
+
+function Conveyor:_remove_prewarm(entity)
+  self._incoming_entities[entity:get_id()] = nil
+  -- The loop will notice that nothing's to do next time and abort.
 end
 
 return Conveyor
