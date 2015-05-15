@@ -34,5 +34,18 @@
          "boundary" : 3,
          "prewarm_boundary" : 2
       }
+   },
+   
+   "entity_data" : {
+      "stonehearth:net_worth" : {
+         "value_in_gold" : 120,
+         "rarity" : "common",
+         "shop_info" : {
+            "buyable" : false,   
+            "sellable" : false,
+            "shopkeeper_level" : 1,
+            "shopkeeper_type" : "caravan"
+         }
+      }
    }
 }
