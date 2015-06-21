@@ -105,7 +105,7 @@ function CarryBlock:_stop_falling()
     self._tick_listener:destroy()
   end
   
-  self._sv._fall_start, self._sv._fall_end = nil, nil, nil
+  self._sv._fall_start, self._sv._fall_end = nil, nil
   self._sv._fall_time = nil
   
   self.__saved_variables:mark_changed()
