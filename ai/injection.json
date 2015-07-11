@@ -1,8 +1,8 @@
 {
-   "components" : {
-      "stonehearth:ai" : {
-         "actions" : [
-            "file(actions/drop_carrying_in_stockpile.lua)"
+   "entity_data" : {
+      "stonehearth:ai_packs" : {
+         "packs": [
+            "zulser:ai_packs:core"
          ]
       }
    }

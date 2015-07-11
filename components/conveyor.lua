@@ -250,7 +250,7 @@ function Conveyor:_install_loop()
   
   self._last_update = radiant.gamestate.now()
   if #self._sv.entities then
-    self._loop = stonehearth.calendar:set_interval(1, function() self:_on_gameloop() end)
+    self._loop = stonehearth.calendar:set_interval('zulser conveyor tick', 1, function() self:_on_gameloop() end)
     self:_set_effect(self.on_effect)
   end
 end

@@ -20,7 +20,9 @@
       "machinery:conveyor_belt" : "file(entities/machinery/conveyor_belt)",
       "machinery:conveyor_belt_mini" : "file(entities/machinery/conveyor_belt_mini)",
       "machinery:conveyor_belt_stone" : "file(entities/machinery/stone_conveyor_belt)",
-      "machinery:conveyor_belt_stone" : "file(entities/machinery/stone_conveyor_belt_mini)"
+      "machinery:conveyor_belt_stone" : "file(entities/machinery/stone_conveyor_belt_mini)",
+      
+      "ai_packs:core" : "file(ai/packs/core_pack.json)"
    },
    
    "mixintos" : {

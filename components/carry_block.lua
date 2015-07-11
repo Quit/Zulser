@@ -96,7 +96,7 @@ function CarryBlock:_start_falling(pt)
 end
 
 function CarryBlock:_resume_falling()
-  self._tick_listener = stonehearth.calendar:set_interval(1, function() self:_on_tick() end)  
+  self._tick_listener = stonehearth.calendar:set_interval('zulser carry_block tick', 1, function() self:_on_tick() end)  
   self._mob = self._entity:get_component('mob')
 end
 
